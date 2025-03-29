@@ -13,28 +13,46 @@ namespace Mission11.API.Controllers
         public BookController(BookContext temp) => _bookContext = temp;
 
         [HttpGet]
-        public IActionResult Get(int pageHowMany = 5, int pageNum = 1, string sort = "asc")
+        public IActionResult GetBooks(int pageHowMany = 5, int pageNum = 1, string sort = "asc", [FromQuery] List<string>? bookTypes = null)
         {
-            var booksQuery = _bookContext.Books.AsQueryable();
+            var query = _bookContext.Books.AsQueryable();
 
-            // Apply sorting based on the 'sort' query parameter (ascending or descending)
-            booksQuery = sort.ToLower() == "desc"
-                ? booksQuery.OrderByDescending(b => b.Title)
-                : booksQuery.OrderBy(b => b.Title);
+            // ✅ Fix 1: Remove the unnecessary semicolon
+            if (bookTypes != null && bookTypes.Any())
+            {
+                query = query.Where(b => bookTypes.Contains(b.Category));
+            }
 
-            // Pagination
-            var books = booksQuery
+            // ✅ Fix 2: Apply sorting to the filtered query
+            query = sort.ToLower() == "desc"
+                ? query.OrderByDescending(b => b.Title)
+                : query.OrderBy(b => b.Title);
+
+            // ✅ Fix 3: Get total count AFTER filtering
+            var totalNumBooks = query.Count();
+
+            // Apply pagination
+            var books = query
                 .Skip((pageNum - 1) * pageHowMany)
                 .Take(pageHowMany)
                 .ToList();
-
-            var totalNumBooks = _bookContext.Books.Count();
 
             return Ok(new
             {
                 Books = books,
                 TotalNumBooks = totalNumBooks
             });
+        }
+
+        [HttpGet("GetBookTypes")]
+        public IActionResult GetBookTypes()
+        {
+            var bookTypes = _bookContext.Books
+                .Select(b => b.Category)
+                .Distinct()
+                .ToList();
+            
+            return Ok(bookTypes);
         }
     }
 }
