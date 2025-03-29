@@ -1,18 +1,21 @@
 import { useEffect, useState } from "react";
-import { Book } from "./types/Book";
+import { Book } from "../types/Book";
+import { useNavigate } from "react-router-dom";
 
-function BookList() {
+function BookList({selectedCategories}: {selectedCategories: string[]}) {
     const [Books, setBooks] = useState<Book[]>([]);
     const [pageSize, setPageSize] = useState<number>(5);
     const [pageNum, setPageNum] = useState<number>(1);
     const [totalItems, setTotalItems] = useState<number>(0);
     const [totalPages, setTotalPages] = useState<number>(0);
     const [sort, setSort] = useState<string>("asc");
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchBooks = async () => {
+            const categoryParams = selectedCategories.map((cat) => `bookTypes=${encodeURIComponent(cat)}` ).join('&');
             const response = await fetch(
-                `https://localhost:5000/api/Book?pageHowMany=${pageSize}&pageNum=${pageNum}&sort=${sort}`
+                `https://localhost:5000/api/Book?pageHowMany=${pageSize}&pageNum=${pageNum}&sort=${sort}${selectedCategories.length ? `&${categoryParams}` : ''}`
             );
             const data = await response.json();
             setBooks(data.books);
@@ -20,11 +23,10 @@ function BookList() {
             setTotalPages(Math.ceil(data.totalNumBooks / pageSize));
         };
         fetchBooks();
-    }, [pageSize, pageNum, sort]);
+    }, [pageSize, pageNum, sort, selectedCategories]);
 
     return (
         <>
-            <h1>Book Store</h1>
             <button onClick={() => setSort(sort === "asc" ? "desc" : "asc")}>
                 Sort by Title ({sort === "asc" ? "Ascending" : "Descending"})
             </button>
@@ -42,6 +44,7 @@ function BookList() {
                             <li>Page Count: {b.pageCount}</li>
                             <li>Price: {b.price}</li>
                         </ul>
+                        <button className="btn btn-success" onClick={() => navigate(`/purchase/${b.title}/${b.bookID}`)}>Purchase</button>
                     </div>
                 </div>
             ))}
