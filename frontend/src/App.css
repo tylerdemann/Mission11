@@ -40,3 +40,28 @@
 .read-the-docs {
   color: #888;
 }
+
+.purchase-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 20px;
+}
+
+.purchase-details {
+  flex: 1;
+}
+
+.purchase-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.quantity-input {
+  width: 80px; /* Adjust the width to fit your design */
+}
+
+h4 {
+  margin: 10px 0;
+}
