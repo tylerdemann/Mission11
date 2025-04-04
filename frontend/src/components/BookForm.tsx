@@ -1,7 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import axios from 'axios';
+import { Book } from '../types/Book';
 
-const BookForm = ({ bookId, onSave }) => {
+const BookForm = ({
+  bookId,
+  onSave,
+}: {
+  bookId?: number;
+  onSave: (book: Book) => void;
+}) => {
   const [book, setBook] = useState({
     title: '',
     author: '',
@@ -10,7 +17,7 @@ const BookForm = ({ bookId, onSave }) => {
     classification: '',
     category: '',
     pageCount: '',
-    price: ''
+    price: '',
   });
 
   useEffect(() => {
@@ -27,18 +34,20 @@ const BookForm = ({ bookId, onSave }) => {
     }
   }, [bookId]);
 
-  const handleChange = (e) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setBook((prevBook) => ({
       ...prevBook,
-      [name]: value
+      [name]: value,
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const method = bookId ? 'put' : 'post';
-    const url = bookId ? `https://localhost:5001/api/book/${bookId}` : 'https://localhost:5001/api/book';
+    const url = bookId
+      ? `https://localhost:5001/api/book/${bookId}`
+      : 'https://localhost:5001/api/book';
 
     axios[method](url, book)
       .then((response) => {
