@@ -32,6 +32,7 @@ const NewBookForm = ({ onSuccess, onCancel }: NewBookFormProps) => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    console.log('Submitting book:', formData);
     await addBook(formData);
     onSuccess();
   };
