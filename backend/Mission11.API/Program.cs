@@ -17,7 +17,7 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowReactAppBlah", 
         policy =>
         {
-            policy.WithOrigins("http://localhost:3000")
+            policy.WithOrigins("http://localhost:3000", "https://ambitious-meadow-0e5f8791e.6.azurestaticapps.net")
                 .AllowAnyMethod()
                 .AllowAnyHeader();
         }));
